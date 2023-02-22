@@ -127,7 +127,7 @@ def game_start():
     while playing:
 
         print("\nShuffle or leave? Press p to Shuffle or l to Leave")
-        player_input()
+        continue_playing()
         if chip_amount <= 0:
             print("\nNo chips left! Come back later\n")
             game_exit()
@@ -152,9 +152,7 @@ def deal_cards():
     dealer_hand.card_add(deck.get_card())
 
     chip_amount -= bet
-
     hidden = True
-
     game_step()
 
 
@@ -173,16 +171,18 @@ def print_hands(hidden):
 
 def game_step():
     global player_hand, dealer_hand
-
     print_hands(True)
 
-    print("\n(H)it or (S)tand?")
-    player_input()
+    if check_blackjack():
+        stand()
+
+    else:
+        print("\n(H)it or (S)tand?")
+        player_input()
 
 
 def hit():
     global deck, dealer_hand, player_hand, chip_amount, bet
-
     card = deck.get_card()
     player_hand.card_add(card)
 
@@ -200,10 +200,9 @@ def hit():
 
 def stand():
     global player_hand, dealer_hand, deck, chip_amount, bet
+
     os.system('clear')
-
     print_hands(False)
-
     time.sleep(2)
 
     while (dealer_hand.calc_value() <= 16):
@@ -213,6 +212,23 @@ def stand():
         card.draw()
         time.sleep(2)
 
+    check_result()
+
+
+def check_blackjack():
+    global player_hand, dealer_hand, deck, bet, chip_amount
+    if (player_hand.calc_value() == 21):
+        print("\nCongratulations! You got a blackjack!")
+        time.sleep(2)
+        stand()
+        return True
+
+    else:
+        return False
+
+
+def check_result():
+    global dealer_hand, player_hand, deck, bet, chip_amount
     if player_hand.calc_value() <= 21:
         if player_hand.calc_value() > dealer_hand.calc_value():
             print("\nYou got {} and dealer got {}. You won {} chips".format(
@@ -232,12 +248,10 @@ def stand():
             else:
                 print("\nDealer got {} and you got {}. You lost {} chips".format(
                     dealer_hand.calc_value(), player_hand.calc_value(), bet))
-                chip_amount -= bet
 
     else:
         print("Busted! You got {} and lost {} chips".format(
             player_hand.calc_value(), bet))
-        chip_amount -= bet
 
 
 def player_input():
@@ -248,14 +262,20 @@ def player_input():
     elif choice == 's':
         stand()
 
-    elif choice == 'p':
+    else:
+        print("Invalid input. Please enter h, s")
+
+
+def continue_playing():
+    choice = input().lower()
+    if choice == 'p':
         deal_cards()
 
     elif choice == 'l':
         game_exit()
 
     else:
-        print("Invalid input. Please enter h, s, p or l")
+        print("Invalid input. Please enter p or l")
 
 
 def game_exit():
