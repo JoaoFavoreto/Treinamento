@@ -305,7 +305,10 @@ def game_exit():
 
 
 os.system('clear')
-print("Welcome to Blackjack!\n")
+intro = "Welcome to Blackjack!\n \nEach round you and the dealer will get 2 initial cards. The goal of the game is to score as close as possible of 21. If you \
+      get a hand value higher than 21, you will get busted and lose your chips. You win if you get a score highter than the dealer or if the dealer get busted. Each round, you can hit (get another card) or stand (wait for the dealer to his lasting cards)."
+
+print(intro)
 player_hand = Hand()
 dealer_hand = Hand()
 game_start()
