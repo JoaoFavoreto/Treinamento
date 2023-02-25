@@ -30,6 +30,7 @@ class Hand():
     def __init__(self):
         self.cards = []
         self.hasAce = False
+        self.hasInsurance = False
         self.value = 0
 
     def card_add(self, card):
@@ -48,6 +49,9 @@ class Hand():
 
         else:
             return self.value - card_value[self.cards[0].rank]
+
+    def take_insurance(self):
+        self.hasInsurance = True
 
     def draw(self, hidden=False):
         if hidden == True:
@@ -168,6 +172,12 @@ def print_hands(hidden):
     print("The dealer's hand's value is {}".format(
         dealer_hand.calc_value(hidden)))
 
+    if hidden and dealer_hand.cards[1] == 'A':
+        insurance = input(
+            "\nThe dealer has an Ace. Would you like to take insurance (half of your bet), 'Y' or 'N'?\n")
+        if insurance == 'Y':
+            player_hand.take_insurance()
+
 
 def game_step():
     global player_hand, dealer_hand
@@ -219,7 +229,7 @@ def check_blackjack():
     global player_hand, dealer_hand, deck, bet, chip_amount
     if (player_hand.calc_value() == 21):
         print("\nCongratulations! You got a blackjack!")
-        time.sleep(2)
+        time.sleep(5)
         stand()
         return True
 
@@ -248,6 +258,9 @@ def check_result():
             else:
                 print("\nDealer got {} and you got {}. You lost {} chips".format(
                     dealer_hand.calc_value(), player_hand.calc_value(), bet))
+                if player_hand.hasInsurance and dealer_hand.calc_value() == 21:
+                    print("\nYou had insurance and got {} chips back.\n".format(bet))
+                    chip_amount += bet
 
     else:
         print("Busted! You got {} and lost {} chips".format(
@@ -256,26 +269,27 @@ def check_result():
 
 def player_input():
     choice = input().lower()
+    while choice != 'h' or choice != 's':
+        print("Invalid input. Please enter h, s")
+        choice = input().lower()
 
     if choice == 'h':
         hit()
-    elif choice == 's':
-        stand()
-
     else:
-        print("Invalid input. Please enter h, s")
+        stand()
 
 
 def continue_playing():
     choice = input().lower()
+    while choice != 'p' or choice != 'l':
+        print("Invalid input. Please enter p or l")
+        choice = input().lower()
+
     if choice == 'p':
         deal_cards()
 
-    elif choice == 'l':
-        game_exit()
-
     else:
-        print("Invalid input. Please enter p or l")
+        game_exit()
 
 
 def game_exit():
