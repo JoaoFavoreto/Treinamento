@@ -172,7 +172,7 @@ def print_hands(hidden):
     print("The dealer's hand's value is {}".format(
         dealer_hand.calc_value(hidden)))
 
-    if hidden and dealer_hand.cards[1] == 'A':
+    if dealer_hand.cards[1].rank == 'A':
         insurance = input(
             "\nThe dealer has an Ace. Would you like to take insurance (half of your bet), 'Y' or 'N'?\n")
         if insurance == 'Y':
@@ -269,7 +269,7 @@ def check_result():
 
 def player_input():
     choice = input().lower()
-    while choice != 'h' or choice != 's':
+    while choice != 'h' and choice != 's':
         print("Invalid input. Please enter h, s")
         choice = input().lower()
 
@@ -281,7 +281,7 @@ def player_input():
 
 def continue_playing():
     choice = input().lower()
-    while choice != 'p' or choice != 'l':
+    while choice != 'p' and choice != 'l':
         print("Invalid input. Please enter p or l")
         choice = input().lower()
 
