@@ -51,7 +51,14 @@ class Hand():
             return self.value - card_value[self.cards[0].rank]
 
     def take_insurance(self):
-        self.hasInsurance = True
+        insurance = input(
+            "\nThe dealer has an Ace. Woud you like to take insurance, 'Y' or 'N'?\n").lower()
+        while insurance != 'y' and insurance != 'n':
+            insurance = input(
+                "\nPlease enter a valid input, 'Y' or 'N': \n").lower()
+
+        if insurance == 'y':
+            self.hasInsurance = True
 
     def draw(self, hidden=False):
         if hidden == True:
@@ -173,10 +180,7 @@ def print_hands(hidden):
         dealer_hand.calc_value(hidden)))
 
     if dealer_hand.cards[1].rank == 'A':
-        insurance = input(
-            "\nThe dealer has an Ace. Would you like to take insurance (half of your bet), 'Y' or 'N'?\n")
-        if insurance == 'Y':
-            player_hand.take_insurance()
+        player_hand.take_insurance()
 
 
 def game_step():
