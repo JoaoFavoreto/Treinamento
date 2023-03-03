@@ -14,12 +14,18 @@ browser.implicitly_wait(5)
 big_cookie = browser.find_element(By.ID, "bigCookie")
 cookie_counter = browser.find_element(By.ID, "cookies")
 upgrades = [browser.find_element(By.ID, "productPrice" + str(i))
-            for i in range(1, -1, -1)]
+            for i in range(4, -1, -1)]
 
-actions = ActionChains | (browser)
+actions = ActionChains(browser)
 actions.click(big_cookie)
 
 for i in range(5000):
     actions.perform()
-    count = cookie_counter.text
-    print(count)
+    count = int(cookie_counter.text.split(" ")[0])
+    for upgrade in upgrades:
+        cost = int(upgrade.text)
+        if cost <= count:
+            upgrade_actions = ActionChains(browser)
+            upgrade_actions.move_to_element(upgrade)
+            upgrade_actions.click()
+            upgrade_actions.perform()
