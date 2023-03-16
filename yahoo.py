@@ -14,39 +14,34 @@ import string
 service = Service(ChromeDriverManager().install())
 options = Options()
 options.add_argument('window-size=400,800')
+options.add_argument('--headless')
 
 driver = webdriver.Chrome(options=options, service=service)
 
 # Navegando para a página do Yahoo Finanças com as ações mais ativas
-driver.get('https://finance.yahoo.com/most-active')
+driver.get('https://finance.yahoo.com/most-active?count=100&offset=0')
 
-# Esperando o driver carregar
-driver.implicitly_wait(10)
+time.sleep(2)
 
-# Obtendo o HTML da págian
+# Obtendo o HTML da página
 html = driver.page_source
+
+time.sleep(2)
 
 # Analisando o HTML com BeautifulSoup
 site = BeautifulSoup(html, 'html.parser')
+acoes = site.findAll('tr', attrs={'class' : 'simpTblRow'})
+detalhes_acoes = []
 
-# Encontrando a tabela das ações
-acoes = site.findAll('table', attrs={'class': 'tr'})
-dados_acoes = []
-
-# Analisando as informações de cada ação
 for acao in acoes:
-    sigla = acao.find('td')[0].text.strip()
-    nome_empresa = acao.find('td')[1].text.strip()
-    variacao_porcentagem = acao.find('td')[2].text.strip()
-    variacao_nominal = acao.find('td')[3].text.strip()
-    volume = acao.find('td')[4].text.strip()
-    valor_mercado = acao.find('td')[5].text.strip()
-    dados_acoes.append([sigla, nome_empresa, variacao_porcentagem,
-                       variacao_nominal, volume, valor_mercado])
+    sigla = acao.find('td', attrs={'aria-label' : 'Symbol'}).text
+    empresa = acao.find('td', attrs={'aria-label' : 'Name'}).text
+    variacao_nominal = acao.find('td', attrs={'aria-label' : 'Change'}).text
+    variacao_porcentagem = acao.find('td', attrs={'aria-label' : "% Change"}).text
+    volume = acao.find('td', attrs={'aria-label' : 'Volume'}).text
+    valor_mercado = acao.find('td', attrs={'aria-label' : 'Market Cap'}).text
+    detalhes_acoes.append([sigla, empresa, variacao_nominal, variacao_porcentagem, volume, valor_mercado])
 
-# Transformando a matriz de dados em uma planilha
-dados = pd.DataFrame(dados_acoes, columns=[
-                     'Sigla', 'Nome da empresa', 'Variação em porcentagem', 'Variação nominal', 'Volume', 'Valor de mercado'])
-dados.to_csv('yahoo_acoes.csv', index=False)
+dados = pd.DataFrame(detalhes_acoes, columns=['Sigla', 'Nome', 'Variacao', 'Variacao em %', 'Volume', 'Valor de mercado'])
 
-driver.quit()
+dados.to_csv('yahoo_finance.csv', index=False)
